@@ -1,4 +1,10 @@
 ---
+- name: "Remove zabbix-agent installation when zabbix-agent2 is used."
+  ansible.builtin.script: windows_zabbix_agent_uninstall.ps1
+  when:
+    - zabbix_agent2
+    - zabbix_agent_package_remove
+
 - name: "Windows | Set default architecture"
   set_fact:
     windows_arch: 32
