@@ -1,9 +1,4 @@
 ---
-- name: "Remove zabbix-agent installation when zabbix-agent2 is used."
-  ansible.builtin.script: windows_zabbix_agent_uninstall.ps1
-  when:
-    - zabbix_agent2
-    - zabbix_agent_package_remove
 
 - name: "Windows | Set default architecture"
   set_fact:
@@ -15,10 +10,6 @@
   when:
     - ansible_architecture == "64-bit"
 
-- name: "Windows | Set path to zabbix.exe"
-  set_fact:
-    zabbix_win_exe_path: '{{ zabbix_win_install_dir }}\bin\win{{ windows_arch }}\zabbix_agentd.exe'
-
 - name: "Windows | Set variables specific to Zabbix >= 4"
   set_fact:
     zabbix_win_svc_name: Zabbix Agent
@@ -29,6 +20,20 @@
     zabbix2_win_config_name: 'zabbix_agent2.conf'
   when:
     - zabbix_version_long is version('4.0.0', '>=')
+
+- name: "Windows | Set path to zabbix.exe"
+  set_fact:
+    zabbix_win_exe_path: '{{ zabbix_win_install_dir }}\bin\win{{ windows_arch }}\zabbix_agentd.exe'
+
+- name: "Windows | Set path to zabbix.exe"
+  set_fact:
+    zabbix_win_conf_path: '{{ zabbix_win_install_dir }}\zabbix_win_config_name'
+
+- name: "Remove zabbix-agent installation when zabbix-agent2 is used."
+  ansible.builtin.script: windows_zabbix_agent_uninstall.ps1 '{{ zabbix_win_exe_path }}' '{{ zabbix_win_conf_path }}'
+  when:
+    - zabbix_agent2
+    - zabbix_agent_package_remove
 
 - name: "Windows | Check if Zabbix agent is present"
   ansible.windows.win_stat:
